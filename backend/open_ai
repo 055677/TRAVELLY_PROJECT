@@ -1,0 +1,16 @@
+import openai
+import os
+
+# Ensure your API key is set correctly
+openai.api_key = 'FJZ8d6jLOb_aejV81C7ijh6vxnnIIRq3v0ueLtkYdZrgagxqLFebEwthlhAE4jttGL3g7Kwp-TcA'
+
+# Test API call to ensure it's working
+try:
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "system", "content": "You are a helpful assistant."}]
+    )
+    print("API response:", response)
+except Exception as e:
+    print("Error:", e)
+
