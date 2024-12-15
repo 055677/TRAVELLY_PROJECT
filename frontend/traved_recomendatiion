@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travelly - Personalized Travel Recommendations</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fdf6e3;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            text-align: center;
+            color: orange;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 15px;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: orange;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+        }
+        button:hover {
+            background-color: #d87c22;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to Travelly</h1>
+        <h2>Your Personalized Travel Recommendation System</h2>
+        <div id="questionnaire">
+            <!-- Dynamic Questions Appear Here -->
+        </div>
+        <div id="result" class="hidden">
+            <h2>Your Recommendations</h2>
+            <p id="result-text"></p>
+        </div>
+    </div>
+
+    <script>
+        const questionnaire = document.getElementById('questionnaire');
+        const resultDiv = document.getElementById('result');
+        const resultText = document.getElementById('result-text');
+        let visitedCities = [];
+        let preferences = {};
+
+        // Start the flow
+        function startQuestionnaire() {
+            showQuestion("Have you ever traveled to any city? (yes/no)", (response) => {
+                if (response.toLowerCase() === "yes") {
+                    askForVisitedCities();
+                } else {
+                    collectPreferences();
+                }
+            });
+        }
+
+        // Ask for visited cities
+        function askForVisitedCities() {
+            showQuestion("Enter the cities you have visited, separated by commas:", (response) => {
+                visitedCities = response.split(",").map(city => city.trim());
+                collectPreferences();
+            });
+        }
+
+        // Collect vacation preferences
+        function collectPreferences() {
+            showQuestion("What is your vacation type? (solo/family/couple)", (response) => {
+                preferences.vacationType = response.toLowerCase();
+                showQuestion("How many days are you planning to spend?", (response) => {
+                    preferences.days = parseInt(response, 10);
+                    if (preferences.vacationType === "family") {
+                        showQuestion("How many children are traveling with you?", (response) => {
+                            preferences.children = parseInt(response, 10);
+                            displayRecommendation();
+                        });
+                    } else {
+                        displayRecommendation();
+                    }
+                });
+            });
+        }
+
+        // Show the recommendation result
+        function displayRecommendation() {
+            questionnaire.classList.add("hidden");
+            resultDiv.classList.remove("hidden");
+
+            let recommendation = "Based on your input: ";
+            if (visitedCities.length > 0) {
+                recommendation += `You've visited ${visitedCities.join(", ")}. `;
+            }
+            recommendation += `You are planning a ${preferences.vacationType} trip for ${preferences.days} day(s). `;
+            if (preferences.vacationType === "family") {
+                recommendation += `Traveling with ${preferences.children} child(ren). `;
+            }
+
+            recommendation += "Here are some personalized recommendations for your trip!";
+            resultText.textContent = recommendation;
+        }
+
+        // Helper to display a question and handle input
+        function showQuestion(questionText, callback) {
+            questionnaire.innerHTML = `
+                <label>${questionText}</label>
+                <input type="text" id="user-input" placeholder="Enter your answer">
+                <button onclick="handleAnswer()">Submit</button>
+            `;
+            const handleAnswer = () => {
+                const input = document.getElementById('user-input').value.trim();
+                if (input) {
+                    callback(input);
+                } else {
+                    alert("Please provide a valid input.");
+                }
+            };
+            window.handleAnswer = handleAnswer;
+        }
+
+        // Start the questionnaire on page load
+        startQuestionnaire();
+    </script>
+</body>
+</html>
